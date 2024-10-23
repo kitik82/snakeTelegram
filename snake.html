@@ -6,23 +6,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="main-menu">
-        <h1>Змейка</h1>
-        <p>Выберите уровень скорости:</p>
-        <button class="speed-btn" data-speed="low">Низкая</button>
-        <button class="speed-btn" data-speed="medium">Средняя</button>
-        <button class="speed-btn" data-speed="fast">Быстрая</button>
-        <button class="speed-btn" data-speed="very-fast">Очень быстрая</button>
-        <p>Выберите цвет змейки:</p>
-        <input type="color" id="snake-color" value="#00AA00">
-        <p>Выберите цвет головы змейки:</p>
-        <input type="color" id="head-color" value="#000000">
-        <h2>Предыдущие счета:</h2>
-        <ul id="score-list"></ul>
-    </div>
-    <div id="game-container">
-        <canvas id="game-canvas" width="400" height="400"></canvas>
-        <div id="score-display">Счет: 0</div>
+    <div id="container">
+        <div id="main-menu">
+            <h1>Змейка</h1>
+            <p>Выберите уровень скорости:</p>
+            <button class="speed-btn" data-speed="low">Низкая</button>
+            <button class="speed-btn" data-speed="medium">Средняя</button>
+            <button class="speed-btn" data-speed="fast">Быстрая</button>
+            <button class="speed-btn" data-speed="very-fast">Очень быстрая</button>
+            <p>Выберите цвет змейки:</p>
+            <input type="color" id="snake-color" value="#00AA00">
+            <p>Выберите цвет головы змейки:</p>
+            <input type="color" id="head-color" value="#000000">
+            <h2>Предыдущие счета:</h2>
+            <ul id="score-list"></ul>
+        </div>
+        <div id="game-container">
+            <canvas id="game-canvas"></canvas>
+            <div id="score-display">Счет: 0</div>
+        </div>
     </div>
     <script src="game.js"></script>
 </body>
