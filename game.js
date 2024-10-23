@@ -3,6 +3,9 @@ const ctx = canvas.getContext('2d');
 const mainMenu = document.getElementById('main-menu');
 const speedButtons = document.querySelectorAll('.speed-btn');
 const scoreList = document.getElementById('score-list');
+const snakeColorInput = document.getElementById('snake-color');
+const headColorInput = document.getElementById('head-color');
+const scoreDisplay = document.getElementById('score-display');
 let snake = [];
 let direction = 'RIGHT';
 let food = {};
@@ -10,12 +13,17 @@ let score = 0;
 let speed = 100;
 let gameInterval;
 let previousScores = [];
+let snakeColor = '#00AA00';
+let headColor = '#000000';
 
 function initGame() {
     snake = [{ x: 9 * 20, y: 10 * 20 }];
     direction = 'RIGHT';
     createFood();
     score = 0;
+    scoreDisplay.textContent = 'Счет: 0';
+    snakeColor = snakeColorInput.value;
+    headColor = headColorInput.value;
 }
 
 function createFood() {
@@ -30,7 +38,7 @@ function draw() {
 
     // Рисуем змейку
     for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = i === 0 ? '#000' : '#00AA00';
+        ctx.fillStyle = i === 0 ? headColor : snakeColor;
         ctx.fillRect(snake[i].x, snake[i].y, 20, 20);
     }
 
@@ -48,15 +56,22 @@ function draw() {
     if (direction === 'RIGHT') snakeX += 20;
     if (direction === 'DOWN') snakeY += 20;
 
-    // Проверяем столкновение с границами
-    if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(snakeX, snakeY, snake)) {
+    // Проверяем столкновение с границами или с самой собой
+    if (
+        snakeX < 0 ||
+        snakeY < 0 ||
+        snakeX >= canvas.width ||
+        snakeY >= canvas.height ||
+        collision(snakeX, snakeY, snake)
+    ) {
         gameOver();
         return;
     }
 
-    // Проверяем съела ли змейка еду
+    // Проверяем, съела ли змейка еду
     if (snakeX === food.x && snakeY === food.y) {
         score++;
+        scoreDisplay.textContent = 'Счет: ' + score;
         createFood();
     } else {
         snake.pop();
@@ -81,7 +96,7 @@ function gameOver() {
     previousScores.push(score);
     updateScoreList();
     mainMenu.style.display = 'block';
-    canvas.style.display = 'none';
+    document.getElementById('game-container').style.display = 'none';
 }
 
 function updateScoreList() {
@@ -116,7 +131,7 @@ speedButtons.forEach(button => {
         else if (selectedSpeed === 'very-fast') speed = 50;
 
         mainMenu.style.display = 'none';
-        canvas.style.display = 'block';
+        document.getElementById('game-container').style.display = 'block';
         initGame();
         gameInterval = setInterval(draw, speed);
     });
