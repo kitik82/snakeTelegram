@@ -30,7 +30,7 @@ canvas {
 </head>
 <body>
 <div id="score">Score: 0</div>
-<canvas width="400" height="400" id="game"></canvas>
+<canvas id="game"></canvas>
 <script>
 var canvas = document.getElementById('game');
 var context = canvas.getContext('2d');
@@ -48,10 +48,22 @@ var snake = {
   cells: [],
   maxCells: 4
 };
+
 var apple = {
   x: 320,
   y: 320
 };
+
+function resizeCanvas() {
+  // Определяем новый размер канвы на основе размеров окна
+  var size = Math.min(window.innerWidth, window.innerHeight) - 40;
+  canvas.width = size;
+  canvas.height = size;
+
+  // Обновляем позиции яблока и змейки
+  grid = Math.floor(canvas.width / 25);
+  resetGame();
+}
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -89,39 +101,40 @@ function loop() {
   }
 
   context.fillStyle = 'red';
-  context.fillRect(apple.x, apple.y, grid-1, grid-1);
+  context.fillRect(apple.x, apple.y, grid - 1, grid - 1);
 
   snake.cells.forEach(function(cell, index) {
-    context.fillStyle = index === 0 ? '#9932CC' : '#FA8072'; // Первый квадратик фиолетовый
-    context.fillRect(cell.x, cell.y, grid-1, grid-1);
+    context.fillStyle = index === 0 ? 'purple' : 'green';
+    context.fillRect(cell.x, cell.y, grid - 1, grid - 1);
 
     if (cell.x === apple.x && cell.y === apple.y) {
       snake.maxCells++;
       score++;
       scoreElement.textContent = 'Score: ' + score;
 
-      apple.x = getRandomInt(0, 25) * grid;
-      apple.y = getRandomInt(0, 25) * grid;
+      apple.x = getRandomInt(0, Math.floor(canvas.width / grid)) * grid;
+      apple.y = getRandomInt(0, Math.floor(canvas.height / grid)) * grid;
     }
 
     for (var i = index + 1; i < snake.cells.length; i++) {
       if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-        snake.x = 160;
-        snake.y = 160;
-        snake.cells = [];
-        snake.maxCells = 4;
-        snake.dx = grid;
-        snake.dy = 0;
-
-        // Сбросить счёт
-        score = 0;
-        scoreElement.textContent = 'Score: ' + score;
-        
-        apple.x = getRandomInt(0, 25) * grid;
-        apple.y = getRandomInt(0, 25) * grid;
+        resetGame();
       }
     }
   });
+}
+
+function resetGame() {
+  snake.x = grid * 10;
+  snake.y = grid * 10;
+  snake.cells = [];
+  snake.maxCells = 4;
+  snake.dx = grid;
+  snake.dy = 0;
+  score = 0;
+  scoreElement.textContent = 'Score: ' + score;
+  apple.x = getRandomInt(0, Math.floor(canvas.width / grid)) * grid;
+  apple.y = getRandomInt(0, Math.floor(canvas.height / grid)) * grid;
 }
 
 document.addEventListener('keydown', function(e) {
@@ -149,13 +162,13 @@ canvas.addEventListener('touchstart', function(e) {
   touchStartX = touch.clientX;
   touchStartY = touch.clientY;
 });
-
-canvas.addEventListener('touchmove', function(e) {
+  canvas.addEventListener('touchmove', function(e) {
   if (e.touches.length > 1) {
     return;
   }
 
   e.preventDefault(); // Предотвращаем прокрутку при касании
+
 
   var touch = e.touches[0];
   var deltaX = touch.clientX - touchStartX;
@@ -168,7 +181,7 @@ canvas.addEventListener('touchmove', function(e) {
       snake.dx = grid;
       snake.dy = 0;
     } else if (deltaX < 0 && snake.dx === 0) {
-            // Влево
+      // Влево
       snake.dx = -grid;
       snake.dy = 0;
     }
@@ -185,12 +198,15 @@ canvas.addEventListener('touchmove', function(e) {
     }
   }
 
-  // Устанавливаем новые позиции начала касания
   touchStartX = touch.clientX;
   touchStartY = touch.clientY;
 });
 
+window.addEventListener('resize', resizeCanvas, false);
+
+resizeCanvas();
 requestAnimationFrame(loop);
 </script>
 </body>
 </html>
+
