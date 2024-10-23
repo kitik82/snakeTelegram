@@ -91,8 +91,8 @@ function loop() {
   context.fillStyle = 'red';
   context.fillRect(apple.x, apple.y, grid-1, grid-1);
 
-  context.fillStyle = 'green';
   snake.cells.forEach(function(cell, index) {
+    context.fillStyle = index === 0 ? 'purple' : 'green'; // Первый квадратик фиолетовый
     context.fillRect(cell.x, cell.y, grid-1, grid-1);
 
     if (cell.x === apple.x && cell.y === apple.y) {
@@ -138,6 +138,56 @@ document.addEventListener('keydown', function(e) {
     snake.dy = grid;
     snake.dx = 0;
   }
+});
+
+// Добавляем поддержку сенсорного ввода
+var touchStartX = 0;
+var touchStartY = 0;
+
+canvas.addEventListener('touchstart', function(e) {
+  var touch = e.touches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+});
+
+canvas.addEventListener('touchmove', function(e) {
+  if (e.touches.length > 1) {
+    return;
+  }
+
+  e.preventDefault(); // Предотвращаем прокрутку при касании
+
+  var touch = e.touches[0];
+  var deltaX = touch.clientX - touchStartX;
+  var deltaY = touch.clientY - touchStartY;
+
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    // Горизонтальное движение
+    if (deltaX > 0 && snake.dx === 0) {
+      // Вправо
+      snake.dx = grid;
+      snake.dy = 0;
+    } else if (deltaX < 0 && snake.dx === 0) {
+            // Влево
+      snake.dx = -grid;
+      snake.dy = 0;
+    }
+  } else {
+    // Вертикальное движение
+    if (deltaY > 0 && snake.dy === 0) {
+      // Вниз
+      snake.dy = grid;
+      snake.dx = 0;
+    } else if (deltaY < 0 && snake.dy === 0) {
+      // Вверх
+      snake.dy = -grid;
+      snake.dx = 0;
+    }
+  }
+
+  // Устанавливаем новые позиции начала касания
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
 });
 
 requestAnimationFrame(loop);
