@@ -9,7 +9,7 @@ body {
     color: #333;
 }
 
-#game-container {
+#menu {
     text-align: center;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     background-color: #f0f8ff;
