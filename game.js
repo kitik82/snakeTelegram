@@ -1,142 +1,142 @@
-const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
-
-let snake = [
-    { x: 150, y: 150 },
-    { x: 140, y: 150 },
-    { x: 130, y: 150 },
-    { x: 120, y: 150 },
-    { x: 110, y: 150 },
-];
-
-let dx = 10;
-let dy = 0;
-let foodX;
-let foodY;
-let changingDirection = false;
+const mainMenu = document.getElementById('main-menu');
+const speedButtons = document.querySelectorAll('.speed-btn');
+const scoreList = document.getElementById('score-list');
+const mobileControls = document.getElementById('mobile-controls');
+let snake = [];
+let direction = 'RIGHT';
+let food = {};
 let score = 0;
+let speed = 100;
+let gameInterval;
+let previousScores = [];
 
-// Функция для старта игры
-function main() {
-    if (didGameEnd()) return;
-    changingDirection = false;
-    setTimeout(() => {
-        clearCanvas();
-        drawFood();
-        moveSnake();
-        drawSnake();
-        main();
-    }, 100);
+function initGame() {
+    snake = [{ x: 9 * 20, y: 10 * 20 }];
+    direction = 'RIGHT';
+    createFood();
+    score = 0;
 }
 
-// Очистка холста
-function clearCanvas() {
-    ctx.fillStyle = "white";
-    ctx.strokeStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+function createFood() {
+    food = {
+        x: Math.floor(Math.random() * 20) * 20,
+        y: Math.floor(Math.random() * 20) * 20,
+    };
 }
 
-// Рисуем змейку
-function drawSnake() {
-    snake.forEach(drawSnakePart);
-}
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-function drawSnakePart(snakePart) {
-    ctx.fillStyle = 'lightgreen';
-    ctx.strokeStyle = 'darkgreen';
-    ctx.fillRect(snakePart.x, snakePart.y, 10, 10);
-    ctx.strokeRect(snakePart.x, snakePart.y, 10, 10);
-}
+    // Рисуем змейку
+    for (let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = i === 0 ? '#000' : '#00AA00';
+        ctx.fillRect(snake[i].x, snake[i].y, 20, 20);
+    }
 
-// Перемещение змейки
-function moveSnake() {
-    const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-    snake.unshift(head);
+    // Рисуем еду
+    ctx.fillStyle = '#FF0000';
+    ctx.fillRect(food.x, food.y, 20, 20);
 
-    const hasEatenFood = snake[0].x === foodX && snake[0].y === foodY;
-    if (hasEatenFood) {
-        score += 10;
-        document.getElementById('score').innerHTML = score;
+    // Сохраняем положение головы
+    let snakeX = snake[0].x;
+    let snakeY = snake[0].y;
+
+    // Обновляем направление
+    if (direction === 'LEFT') snakeX -= 20;
+    if (direction === 'UP') snakeY -= 20;
+    if (direction === 'RIGHT') snakeX += 20;
+    if (direction === 'DOWN') snakeY += 20;
+
+    // Проверяем столкновение с границами
+    if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(snakeX, snakeY, snake)) {
+        gameOver();
+        return;
+    }
+
+    // Проверяем съела ли змейка еду
+    if (snakeX === food.x && snakeY === food.y) {
+        score++;
         createFood();
     } else {
         snake.pop();
     }
+
+    // Добавляем новую голову
+    let newHead = { x: snakeX, y: snakeY };
+    snake.unshift(newHead);
 }
 
-// Изменение направления
-function changeDirection(event) {
-    const LEFT_KEY = 37;
-    const RIGHT_KEY = 39;
-    const UP_KEY = 38;
-    const DOWN_KEY = 40;
-
-    if (changingDirection) return;
-    changingDirection = true;
-
-    const keyPressed = event.keyCode;
-    const goingUp = dy === -10;
-    const goingDown = dy === 10;
-    const goingRight = dx === 10;
-    const goingLeft = dx === -10;
-
-    if (keyPressed === LEFT_KEY && !goingRight) {
-        dx = -10;
-        dy = 0;
+function collision(x, y, array) {
+    for (let i = 0; i < array.length; i++) {
+        if (x === array[i].x && y === array[i].y) {
+            return true;
+        }
     }
-
-    if (keyPressed === UP_KEY && !goingDown) {
-        dx = 0;
-        dy = -10;
-    }
-
-    if (keyPressed === RIGHT_KEY && !goingLeft) {
-        dx = 10;
-        dy = 0;
-    }
-
-    if (keyPressed === DOWN_KEY && !goingUp) {
-        dx = 0;
-        dy = 10;
-    }
+    return false;
 }
 
-// Проверка на завершение игры
-function didGameEnd() {
-    for (let i = 4; i < snake.length; i++) {
-        if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
-    }
-    const hitLeftWall = snake[0].x < 0;
-    const hitRightWall = snake[0].x > canvas.width - 10;
-    const hitToptWall = snake[0].y < 0;
-    const hitBottomWall = snake[0].y > canvas.height - 10;
-
-    return hitLeftWall || hitRightWall || hitToptWall || hitBottomWall;
+function gameOver() {
+    clearInterval(gameInterval);
+    previousScores.push(score);
+    updateScoreList();
+    mainMenu.style.display = 'block';
+    canvas.style.display = 'none';
+    mobileControls.style.display = 'none';
 }
 
-// Создание еды
-function randomTen(min, max) {
-    return Math.round((Math.random() * (max-min) + min) / 10) * 10;
-}
-
-function createFood() {
-    foodX = randomTen(0, canvas.width - 10);
-    foodY = randomTen(0, canvas.height - 10);
-    snake.forEach(part => {
-        const hasEaten = part.x == foodX && part.y == foodY;
-        if (hasEaten) createFood();
+function updateScoreList() {
+    scoreList.innerHTML = '';
+    previousScores.forEach((s, index) => {
+        let li = document.createElement('li');
+        li.textContent = `Игра ${index + 1}: ${s} очков`;
+        scoreList.appendChild(li);
     });
 }
 
-// Рисуем еду
-function drawFood() {
-    ctx.fillStyle = 'red';
-    ctx.strokeStyle = 'darkred';
-    ctx.fillRect(foodX, foodY, 10, 10);
-    ctx.strokeRect(foodX, foodY, 10, 10);
-}
+// Управление с клавиатуры
+document.addEventListener('keydown', event => {
+    if (event.key === 'ArrowLeft' && direction !== 'RIGHT') {
+        direction = 'LEFT';
+    } else if (event.key === 'ArrowUp' && direction !== 'DOWN') {
+        direction = 'UP';
+    } else if (event.key === 'ArrowRight' && direction !== 'LEFT') {
+        direction = 'RIGHT';
+    } else if (event.key === 'ArrowDown' && direction !== 'UP') {
+        direction = 'DOWN';
+    }
+});
 
-document.addEventListener("keydown", changeDirection);
+// Управление с мобильных устройств
+document.getElementById('left').addEventListener('click', () => {
+    if (direction !== 'RIGHT') direction = 'LEFT';
+});
+document.getElementById('up').addEventListener('click', () => {
+    if (direction !== 'DOWN') direction = 'UP';
+});
+document.getElementById('right').addEventListener('click', () => {
+    if (direction !== 'LEFT') direction = 'RIGHT';
+});
+document.getElementById('down').addEventListener('click', () => {
+    if (direction !== 'UP') direction = 'DOWN';
+});
 
-createFood();
-main();
+// Выбор скорости
+speedButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        let selectedSpeed = button.getAttribute('data-speed');
+        if (selectedSpeed === 'low') speed = 200;
+        else if (selectedSpeed === 'medium') speed = 150;
+        else if (selectedSpeed === 'fast') speed = 100;
+        else if (selectedSpeed === 'very-fast') speed = 50;
+
+        mainMenu.style.display = 'none';
+        canvas.style.display = 'block';
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            mobileControls.style.display = 'block';
+        }
+        initGame();
+        gameInterval = setInterval(draw, speed);
+    });
+});
