@@ -3,7 +3,6 @@ const ctx = canvas.getContext('2d');
 const mainMenu = document.getElementById('main-menu');
 const speedButtons = document.querySelectorAll('.speed-btn');
 const scoreList = document.getElementById('score-list');
-const mobileControls = document.getElementById('mobile-controls');
 let snake = [];
 let direction = 'RIGHT';
 let food = {};
@@ -83,7 +82,6 @@ function gameOver() {
     updateScoreList();
     mainMenu.style.display = 'block';
     canvas.style.display = 'none';
-    mobileControls.style.display = 'none';
 }
 
 function updateScoreList() {
@@ -108,20 +106,6 @@ document.addEventListener('keydown', event => {
     }
 });
 
-// Управление с мобильных устройств
-document.getElementById('left').addEventListener('click', () => {
-    if (direction !== 'RIGHT') direction = 'LEFT';
-});
-document.getElementById('up').addEventListener('click', () => {
-    if (direction !== 'DOWN') direction = 'UP';
-});
-document.getElementById('right').addEventListener('click', () => {
-    if (direction !== 'LEFT') direction = 'RIGHT';
-});
-document.getElementById('down').addEventListener('click', () => {
-    if (direction !== 'UP') direction = 'DOWN';
-});
-
 // Выбор скорости
 speedButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -133,9 +117,6 @@ speedButtons.forEach(button => {
 
         mainMenu.style.display = 'none';
         canvas.style.display = 'block';
-        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            mobileControls.style.display = 'block';
-        }
         initGame();
         gameInterval = setInterval(draw, speed);
     });
