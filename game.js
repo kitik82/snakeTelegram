@@ -22,7 +22,11 @@ function initGame() {
     // Устанавливаем размер канваса в зависимости от доступной ширины
     adjustCanvasSize();
 
-    snake = [{ x: 9 * gridSize, y: 10 * gridSize }];
+    // Инициализируем позицию змейки в центре канваса
+    const initialX = Math.floor((canvas.width / gridSize) / 2) * gridSize;
+    const initialY = Math.floor((canvas.height / gridSize) / 2) * gridSize;
+    snake = [{ x: initialX, y: initialY }];
+
     direction = 'RIGHT';
     createFood();
     score = 0;
@@ -35,14 +39,22 @@ function adjustCanvasSize() {
     // Определяем размер канваса в зависимости от размера окна или мини-приложения
     let minDimension = Math.min(window.innerWidth, window.innerHeight) * 0.8;
     canvasSize = Math.floor(minDimension / gridSize) * gridSize; // Убедимся, что размер кратен gridSize
+
+    // Устанавливаем минимальный размер канваса
+    if (canvasSize < 200) {
+        canvasSize = 200;
+    }
+
     canvas.width = canvasSize;
     canvas.height = canvasSize;
 }
 
 function createFood() {
+    const maxCellsX = canvas.width / gridSize;
+    const maxCellsY = canvas.height / gridSize;
     food = {
-        x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
-        y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize,
+        x: Math.floor(Math.random() * maxCellsX) * gridSize,
+        y: Math.floor(Math.random() * maxCellsY) * gridSize,
     };
 }
 
