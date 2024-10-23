@@ -1,12 +1,7 @@
-/* Устанавливаем размеры канваса в JavaScript, поэтому убираем width и height из HTML */
-
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-}
+/* Существующий CSS */
 
 body {
+    margin: 0;
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
 }
@@ -40,12 +35,14 @@ body {
 
 #game-container {
     position: relative;
+    display: inline-block;
+    border: 10px solid;
+    border-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet) 1;
 }
 
 #game-canvas {
     background-color: #ffffff;
     display: block;
-    margin: 0 auto;
 }
 
 #score-display {
