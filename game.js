@@ -1,9 +1,9 @@
-// game.js
 let canvas, ctx;
 let snake = [{ x: 10, y: 10 }];
 let food = { x: 5, y: 5 };
 let direction = { x: 0, y: 0 };
 let speed = 100;
+let score = 0;
 let gameInterval = null;
 
 function draw() {
@@ -16,16 +16,19 @@ function draw() {
     // Рисуем змейку
     ctx.fillStyle = "purple";
     snake.forEach(segment => ctx.fillRect(segment.x * 20, segment.y * 20, 20, 20));
+    
+    // Обновляем счёт
+    document.getElementById('score').innerHTML = `Счёт: ${score}`;
 }
 
 function update() {
-    // Обновляем положение змейки
     const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
     
     snake.unshift(head);
     
     // Проверка на столкновение с едой
     if (head.x === food.x && head.y === food.y) {
+        score++;
         placeFood();
     } else {
         snake.pop();
@@ -34,7 +37,6 @@ function update() {
     // Проверка на столкновение со стенами или с самой собой
     if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)) {
         clearInterval(gameInterval);
-        alert('Игра окончена!');
         resetGame();
     }
     
@@ -51,27 +53,26 @@ function placeFood() {
 function changeDirection(event) {
     switch (event.key) {
         case 'ArrowUp':
-            direction = { x: 0, y: -1 };
+            if (direction.y !== 1) direction = { x: 0, y: -1 };
             break;
         case 'ArrowDown':
-            direction = { x: 0, y: 1 };
+            if (direction.y !== -1) direction = { x: 0, y: 1 };
             break;
         case 'ArrowLeft':
-            direction = { x: -1, y: 0 };
+            if (direction.x !== 1) direction = { x: -1, y: 0 };
             break;
         case 'ArrowRight':
-            direction = { x: 1, y: 0 };
+            if (direction.x !== -1) direction = { x: 1, y: 0 };
             break;
     }
 }
 
 function startGame() {
-    // Устанавливаем начальные значения
     snake = [{ x: 10, y: 10 }];
     direction = { x: 0, y: 0 };
+    score = 0;
     placeFood();
     
-    // Получаем выбранную скорость
     const speedSelect = document.getElementById('speed');
     speed = parseInt(speedSelect.value);
     
