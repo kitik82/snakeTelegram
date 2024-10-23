@@ -85,8 +85,8 @@ function draw() {
     if (
         snakeX < 0 ||
         snakeY < 0 ||
-        snakeX >= canvas.width ||
-        snakeY >= canvas.height ||
+        snakeX + gridSize > canvas.width ||
+        snakeY + gridSize > canvas.height ||
         collision(snakeX, snakeY, snake)
     ) {
         gameOver();
