@@ -34,7 +34,7 @@ function moveSnake() {
     snake.unshift(head);
     
     if (head.x === food.x && head.y === food.y) {
-        score += 10;
+        score += 1;
         food = {x: Math.floor(Math.random() * canvas.width / 20) * 20, 
                 y: Math.floor(Math.random() * canvas.height / 20) * 20};
     } else {
