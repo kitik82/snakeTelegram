@@ -1,89 +1,93 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+// game.js
+let canvas, ctx;
+let snake = [{ x: 10, y: 10 }];
+let food = { x: 5, y: 5 };
+let direction = { x: 0, y: 0 };
+let speed = 100;
+let gameInterval = null;
 
-// Установите размеры канваса
-canvas.width = 400;
-canvas.height = 400;
-
-let snake = [{x: 200, y: 200}];
-let direction = 'RIGHT';
-let food = {x: Math.floor(Math.random() * canvas.width / 20) * 20, 
-            y: Math.floor(Math.random() * canvas.height / 20) * 20};
-let score = 0;
-
-function drawSnake() {
-    for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = i === 0 ? 'purple' : 'green'; // Голова змейки — фиолетовая
-        ctx.fillRect(snake[i].x, snake[i].y, 20, 20);
-    }
-}
-
-function drawFood() {
-    ctx.fillStyle = 'red';
-    ctx.fillRect(food.x, food.y, 20, 20);
-}
-
-function moveSnake() {
-    const head = {x: snake[0].x, y: snake[0].y};
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    if (direction === 'RIGHT') head.x += 20;
-    if (direction === 'LEFT') head.x -= 20;
-    if (direction === 'UP') head.y -= 20;
-    if (direction === 'DOWN') head.y += 20;
+    // Рисуем еду
+    ctx.fillStyle = "red";
+    ctx.fillRect(food.x * 20, food.y * 20, 20, 20);
+    
+    // Рисуем змейку
+    ctx.fillStyle = "purple";
+    snake.forEach(segment => ctx.fillRect(segment.x * 20, segment.y * 20, 20, 20));
+}
 
+function update() {
+    // Обновляем положение змейки
+    const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+    
     snake.unshift(head);
     
+    // Проверка на столкновение с едой
     if (head.x === food.x && head.y === food.y) {
-        score += 1;
-        food = {x: Math.floor(Math.random() * canvas.width / 20) * 20, 
-                y: Math.floor(Math.random() * canvas.height / 20) * 20};
+        placeFood();
     } else {
         snake.pop();
     }
-}
-
-function checkCollision() {
-    const head = snake[0];
-    if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height) {
-        return true;
-    }
-    for (let i = 1; i < snake.length; i++) {
-        if (head.x === snake[i].x && head.y === snake[i].y) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function setDirection(event) {
-    if (event.keyCode === 37 && direction !== 'RIGHT') {
-        direction = 'LEFT';
-    }
-    if (event.keyCode === 38 && direction !== 'DOWN') {
-        direction = 'UP';
-    }
-    if (event.keyCode === 39 && direction !== 'LEFT') {
-        direction = 'RIGHT';
-    }
-    if (event.keyCode === 40 && direction !== 'UP') {
-        direction = 'DOWN';
-    }
-}
-
-document.addEventListener('keydown', setDirection);
-
-function gameLoop() {
-    if (checkCollision()) {
-        alert('Игра окончена! Ваш счет: ' + score);
-        snake = [{x: 200, y: 200}];
-        direction = 'RIGHT';
-        score = 0;
+    
+    // Проверка на столкновение со стенами или с самой собой
+    if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)) {
+        clearInterval(gameInterval);
+        alert('Игра окончена!');
+        resetGame();
     }
     
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawSnake();
-    drawFood();
-    moveSnake();
+    draw();
 }
 
-setInterval(gameLoop, 100);
+function placeFood() {
+    food = {
+        x: Math.floor(Math.random() * 20),
+        y: Math.floor(Math.random() * 20)
+    };
+}
+
+function changeDirection(event) {
+    switch (event.key) {
+        case 'ArrowUp':
+            direction = { x: 0, y: -1 };
+            break;
+        case 'ArrowDown':
+            direction = { x: 0, y: 1 };
+            break;
+        case 'ArrowLeft':
+            direction = { x: -1, y: 0 };
+            break;
+        case 'ArrowRight':
+            direction = { x: 1, y: 0 };
+            break;
+    }
+}
+
+function startGame() {
+    // Устанавливаем начальные значения
+    snake = [{ x: 10, y: 10 }];
+    direction = { x: 0, y: 0 };
+    placeFood();
+    
+    // Получаем выбранную скорость
+    const speedSelect = document.getElementById('speed');
+    speed = parseInt(speedSelect.value);
+    
+    document.getElementById('menu').style.display = 'none';
+    canvas.style.display = 'block';
+    
+    gameInterval = setInterval(update, speed);
+}
+
+function resetGame() {
+    document.getElementById('menu').style.display = 'block';
+    canvas.style.display = 'none';
+}
+
+window.onload = function() {
+    canvas = document.getElementById('gameCanvas');
+    ctx = canvas.getContext('2d');
+    document.addEventListener('keydown', changeDirection);
+}
