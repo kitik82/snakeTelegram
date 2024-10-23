@@ -92,7 +92,7 @@ function loop() {
   context.fillRect(apple.x, apple.y, grid-1, grid-1);
 
   snake.cells.forEach(function(cell, index) {
-    context.fillStyle = index === 0 ? '#CD5C5C' : '#FA8072'; // Первый квадратик фиолетовый
+    context.fillStyle = index === 0 ? '#9932CC' : '#FA8072'; // Первый квадратик фиолетовый
     context.fillRect(cell.x, cell.y, grid-1, grid-1);
 
     if (cell.x === apple.x && cell.y === apple.y) {
