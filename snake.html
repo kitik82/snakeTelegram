@@ -2,25 +2,27 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Игра Змейка</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Игра Змейка</h1>
-    <div id="game-container">
-        <label for="speed">Выберите скорость:</label>
-        <select id="speed">
-            <option value="150">Медленная</option>
-            <option value="125" selected>Средняя</option>
-            <option value="100">Быстрая</option>
-            <option value="50">Супер быстрая</option>
-            <option value="25">Невозможно быстрая</option>
-        </select>
-        <button onclick="startGame()">Начать игру</button>
+    <div id="main-menu">
+        <h1>Змейка</h1>
+        <p>Выберите уровень скорости:</p>
+        <button class="speed-btn" data-speed="low">Низкая</button>
+        <button class="speed-btn" data-speed="medium">Средняя</button>
+        <button class="speed-btn" data-speed="fast">Быстрая</button>
+        <button class="speed-btn" data-speed="very-fast">Очень быстрая</button>
+        <h2>Предыдущие счета:</h2>
+        <ul id="score-list"></ul>
     </div>
-    <div id="score">Счёт: 0</div>
-    <canvas id="gameCanvas" width="400" height="400" style="border:1px solid black; display: none;"></canvas>
+    <canvas id="game-canvas" width="400" height="400"></canvas>
+    <div id="mobile-controls">
+        <button id="up">↑</button><br>
+        <button id="left">←</button>
+        <button id="down">↓</button>
+        <button id="right">→</button>
+    </div>
     <script src="game.js"></script>
 </body>
 </html>
