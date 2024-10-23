@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Игра Змейка</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="game-container">
-        <canvas id="gameCanvas"></canvas>
+    <h1>Игра Змейка</h1>
+    <div id="menu">
+        <label for="speed">Выберите скорость:</label>
+        <select id="speed">
+            <option value="200">Медленная</option>
+            <option value="100" selected>Средняя</option>
+            <option value="50">Быстрая</option>
+        </select>
+        <button onclick="startGame()">Начать игру</button>
     </div>
+    <canvas id="gameCanvas" width="400" height="400" style="border:1px solid black; display: none;"></canvas>
     <script src="game.js"></script>
 </body>
 </html>
