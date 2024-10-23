@@ -1,91 +1,142 @@
-let canvas, ctx;
-let snake = [{ x: 10, y: 10 }];
-let food = { x: 5, y: 5 };
-let direction = { x: 0, y: 0 };
-let speed = 100;
-let gameInterval = null;
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+let snake = [
+    { x: 150, y: 150 },
+    { x: 140, y: 150 },
+    { x: 130, y: 150 },
+    { x: 120, y: 150 },
+    { x: 110, y: 150 },
+];
+
+let dx = 10;
+let dy = 0;
+let foodX;
+let foodY;
+let changingDirection = false;
 let score = 0;
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Рисуем еду
-    ctx.fillStyle = "red";
-    ctx.fillRect(food.x * 20, food.y * 20, 20, 20);
-    
-    // Рисуем змейку
-    ctx.fillStyle = "purple";
-    snake.forEach(segment => ctx.fillRect(segment.x * 20, segment.y * 20, 20, 20));
-    
-    // Обновляем счёт
-    document.getElementById('score').textContent = "Счёт: " + score;
+// Функция для старта игры
+function main() {
+    if (didGameEnd()) return;
+    changingDirection = false;
+    setTimeout(() => {
+        clearCanvas();
+        drawFood();
+        moveSnake();
+        drawSnake();
+        main();
+    }, 100);
 }
 
-function update() {
-    const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-    
+// Очистка холста
+function clearCanvas() {
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeRect(0, 0, canvas.width, canvas.height);
+}
+
+// Рисуем змейку
+function drawSnake() {
+    snake.forEach(drawSnakePart);
+}
+
+function drawSnakePart(snakePart) {
+    ctx.fillStyle = 'lightgreen';
+    ctx.strokeStyle = 'darkgreen';
+    ctx.fillRect(snakePart.x, snakePart.y, 10, 10);
+    ctx.strokeRect(snakePart.x, snakePart.y, 10, 10);
+}
+
+// Перемещение змейки
+function moveSnake() {
+    const head = { x: snake[0].x + dx, y: snake[0].y + dy };
     snake.unshift(head);
-    
-    // Проверка на столкновение с едой
-    if (head.x === food.x && head.y === food.y) {
-        score += 10;  // Добавляем очки за еду
-        placeFood();
+
+    const hasEatenFood = snake[0].x === foodX && snake[0].y === foodY;
+    if (hasEatenFood) {
+        score += 10;
+        document.getElementById('score').innerHTML = score;
+        createFood();
     } else {
         snake.pop();
     }
-    
-    // Проверка на столкновение со стенами или с самой собой
-    if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y)) {
-        clearInterval(gameInterval);
-        setTimeout(startGame, 1000); // Перезапускаем игру через 1 секунду
-        return;
-    }
-    
-    draw();
 }
 
-function placeFood() {
-    food = {
-        x: Math.floor(Math.random() * 20),
-        y: Math.floor(Math.random() * 20)
-    };
-}
-
+// Изменение направления
 function changeDirection(event) {
-    switch (event.key) {
-        case 'ArrowUp':
-            if (direction.y !== 1) direction = { x: 0, y: -1 };
-            break;
-        case 'ArrowDown':
-            if (direction.y !== -1) direction = { x: 0, y: 1 };
-            break;
-        case 'ArrowLeft':
-            if (direction.x !== 1) direction = { x: -1, y: 0 };
-            break;
-        case 'ArrowRight':
-            if (direction.x !== -1) direction = { x: 1, y: 0 };
-            break;
+    const LEFT_KEY = 37;
+    const RIGHT_KEY = 39;
+    const UP_KEY = 38;
+    const DOWN_KEY = 40;
+
+    if (changingDirection) return;
+    changingDirection = true;
+
+    const keyPressed = event.keyCode;
+    const goingUp = dy === -10;
+    const goingDown = dy === 10;
+    const goingRight = dx === 10;
+    const goingLeft = dx === -10;
+
+    if (keyPressed === LEFT_KEY && !goingRight) {
+        dx = -10;
+        dy = 0;
+    }
+
+    if (keyPressed === UP_KEY && !goingDown) {
+        dx = 0;
+        dy = -10;
+    }
+
+    if (keyPressed === RIGHT_KEY && !goingLeft) {
+        dx = 10;
+        dy = 0;
+    }
+
+    if (keyPressed === DOWN_KEY && !goingUp) {
+        dx = 0;
+        dy = 10;
     }
 }
 
-function startGame() {
-    snake = [{ x: 10, y: 10 }];
-    direction = { x: 0, y: 0 };
-    score = 0; // Сбрасываем счёт
-    placeFood();
+// Проверка на завершение игры
+function didGameEnd() {
+    for (let i = 4; i < snake.length; i++) {
+        if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
+    }
+    const hitLeftWall = snake[0].x < 0;
+    const hitRightWall = snake[0].x > canvas.width - 10;
+    const hitToptWall = snake[0].y < 0;
+    const hitBottomWall = snake[0].y > canvas.height - 10;
 
-    const speedSelect = document.getElementById('speed');
-    speed = parseInt(speedSelect.value);
-
-    document.getElementById('menu').style.display = 'none';
-    canvas.style.display = 'block';
-
-    if (gameInterval) clearInterval(gameInterval);
-    gameInterval = setInterval(update, speed);
+    return hitLeftWall || hitRightWall || hitToptWall || hitBottomWall;
 }
 
-window.onload = function() {
-    canvas = document.getElementById('gameCanvas');
-    ctx = canvas.getContext('2d');
-    document.addEventListener('keydown', changeDirection);
+// Создание еды
+function randomTen(min, max) {
+    return Math.round((Math.random() * (max-min) + min) / 10) * 10;
 }
+
+function createFood() {
+    foodX = randomTen(0, canvas.width - 10);
+    foodY = randomTen(0, canvas.height - 10);
+    snake.forEach(part => {
+        const hasEaten = part.x == foodX && part.y == foodY;
+        if (hasEaten) createFood();
+    });
+}
+
+// Рисуем еду
+function drawFood() {
+    ctx.fillStyle = 'red';
+    ctx.strokeStyle = 'darkred';
+    ctx.fillRect(foodX, foodY, 10, 10);
+    ctx.strokeRect(foodX, foodY, 10, 10);
+}
+
+document.addEventListener("keydown", changeDirection);
+
+createFood();
+main();
