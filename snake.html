@@ -1,134 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Snake Game</title>
-<style>
-  canvas {
-    background-color: #f0f0f0;
-    display: block;
-    margin: 0 auto;
-    border: 2px solid #ccc;
-  }
-  #score {
-    text-align: center;
-    font-size: 24px;
-    margin-top: 10px;
-  }
-  #speedControl {
-    text-align: center;
-    margin-top: 10px;
-  }
-  #speedControl label {
-    font-size: 18px;
-  }
-  #speedControl select {
-    padding: 4px;
-    font-size: 16px;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра Змейка</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<canvas id="snakeGame"></canvas>
-<div id="score">Score: 0</div>
-
-<div id="speedControl">
-  <label for="speed">Speed:</label>
-  <select id="speed">
-    <option value="200">Slow</option>
-    <option value="100" selected>Normal</option>
-    <option value="50">Fast</option>
-  </select>
-</div>
-
-<script>
-  const canvas = document.getElementById('snakeGame');
-  const ctx = canvas.getContext('2d');
-  const box = 32;
-  let snake = [];
-  snake[0] = { x: 9 * box, y: 10 * box };
-  let direction;
-  let food = {
-    x: Math.floor(Math.random() * 17 + 1) * box,
-    y: Math.floor(Math.random() * 15 + 3) * box
-  };
-  let score = 0;
-  let gameSpeed = 100;
-
-  canvas.width = 608;
-  canvas.height = 608;
-
-  document.getElementById('speed').addEventListener('change', function () {
-    clearInterval(game);
-    gameSpeed = parseInt(this.value);
-    game = setInterval(draw, gameSpeed);
-  });
-
-  document.addEventListener('keydown', directionControl);
-
-  function directionControl(event) {
-    if (event.keyCode === 37 && direction !== 'RIGHT') direction = 'LEFT';
-    else if (event.keyCode === 38 && direction !== 'DOWN') direction = 'UP';
-    else if (event.keyCode === 39 && direction !== 'LEFT') direction = 'RIGHT';
-    else if (event.keyCode === 40 && direction !== 'UP') direction = 'DOWN';
-  }
-
-  function draw() {
-    ctx.fillStyle = '#f0f0f0';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    for (let i = 0; i < snake.length; i++) {
-      ctx.fillStyle = i === 0 ? 'purple' : 'green';
-      ctx.fillRect(snake[i].x, snake[i].y, box, box);
-
-      ctx.strokeStyle = 'darkgreen';
-      ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-    }
-
-    ctx.fillStyle = 'red';
-    ctx.fillRect(food.x, food.y, box, box);
-
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
-
-    if (direction === 'LEFT') snakeX -= box;
-    if (direction === 'UP') snakeY -= box;
-    if (direction === 'RIGHT') snakeX += box;
-    if (direction === 'DOWN') snakeY += box;
-
-    if (snakeX === food.x && snakeY === food.y) {
-      score++;
-      document.getElementById('score').innerText = `Score: ${score}`;
-      food = {
-        x: Math.floor(Math.random() * 17 + 1) * box,
-        y: Math.floor(Math.random() * 15 + 3) * box
-      };
-    } else {
-      snake.pop();
-    }
-
-    let newHead = { x: snakeX, y: snakeY };
-
-    if (snakeX < box || snakeX > 17 * box || snakeY < 3 * box || snakeY > 17 * box || collision(newHead, snake)) {
-      clearInterval(game);
-      alert('Game Over');
-      location.reload();
-    }
-
-    snake.unshift(newHead);
-  }
-
-  function collision(head, array) {
-    for (let i = 0; i < array.length; i++) {
-      if (head.x === array[i].x && head.y === array[i].y) return true;
-    }
-    return false;
-  }
-
-  let game = setInterval(draw, gameSpeed);
-</script>
-
+    <h1>Игра Змейка</h1>
+    <div id="menu">
+        <label for="speed">Выберите скорость:</label>
+        <select id="speed">
+            <option value="150">Медленная</option>
+            <option value="125" selected>Средняя</option>
+            <option value="100">Быстрая</option>
+            <option value="50">Супер быстрая</option>
+            <option value="25">Невозможно быстрая</option>
+        </select>
+        <button onclick="startGame()">Начать игру</button>
+    </div>
+    <canvas id="gameCanvas" width="400" height="400" style="border:1px solid black; display: none;"></canvas>
+    <script src="game.js"></script>
 </body>
 </html>
