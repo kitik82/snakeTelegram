@@ -15,9 +15,14 @@ let gameInterval;
 let previousScores = [];
 let snakeColor = '#00AA00';
 let headColor = '#000000';
+let gridSize = 20;
+let canvasSize = 400; // Размер канваса по умолчанию
 
 function initGame() {
-    snake = [{ x: 9 * 20, y: 10 * 20 }];
+    // Устанавливаем размер канваса в зависимости от доступной ширины
+    adjustCanvasSize();
+
+    snake = [{ x: 9 * gridSize, y: 10 * gridSize }];
     direction = 'RIGHT';
     createFood();
     score = 0;
@@ -26,10 +31,18 @@ function initGame() {
     headColor = headColorInput.value;
 }
 
+function adjustCanvasSize() {
+    // Определяем размер канваса в зависимости от размера окна или мини-приложения
+    let minDimension = Math.min(window.innerWidth, window.innerHeight) * 0.8;
+    canvasSize = Math.floor(minDimension / gridSize) * gridSize; // Убедимся, что размер кратен gridSize
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
+}
+
 function createFood() {
     food = {
-        x: Math.floor(Math.random() * 20) * 20,
-        y: Math.floor(Math.random() * 20) * 20,
+        x: Math.floor(Math.random() * (canvas.width / gridSize)) * gridSize,
+        y: Math.floor(Math.random() * (canvas.height / gridSize)) * gridSize,
     };
 }
 
@@ -39,22 +52,22 @@ function draw() {
     // Рисуем змейку
     for (let i = 0; i < snake.length; i++) {
         ctx.fillStyle = i === 0 ? headColor : snakeColor;
-        ctx.fillRect(snake[i].x, snake[i].y, 20, 20);
+        ctx.fillRect(snake[i].x, snake[i].y, gridSize, gridSize);
     }
 
     // Рисуем еду
     ctx.fillStyle = '#FF0000';
-    ctx.fillRect(food.x, food.y, 20, 20);
+    ctx.fillRect(food.x, food.y, gridSize, gridSize);
 
     // Сохраняем положение головы
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
 
     // Обновляем направление
-    if (direction === 'LEFT') snakeX -= 20;
-    if (direction === 'UP') snakeY -= 20;
-    if (direction === 'RIGHT') snakeX += 20;
-    if (direction === 'DOWN') snakeY += 20;
+    if (direction === 'LEFT') snakeX -= gridSize;
+    if (direction === 'UP') snakeY -= gridSize;
+    if (direction === 'RIGHT') snakeX += gridSize;
+    if (direction === 'DOWN') snakeY += gridSize;
 
     // Проверяем столкновение с границами или с самой собой
     if (
@@ -135,4 +148,11 @@ speedButtons.forEach(button => {
         initGame();
         gameInterval = setInterval(draw, speed);
     });
+});
+
+// Обновляем размер канваса при изменении размера окна
+window.addEventListener('resize', () => {
+    if (canvas.style.display !== 'none') {
+        adjustCanvasSize();
+    }
 });
