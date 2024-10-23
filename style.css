@@ -1,12 +1,30 @@
-body {
+/* Устанавливаем размеры канваса в JavaScript, поэтому убираем width и height из HTML */
+
+html, body {
     margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
 }
 
+#container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+#main-menu, #game-container {
+    margin: auto;
+}
+
 #main-menu {
     text-align: center;
-    padding: 20px;
 }
 
 #main-menu h1 {
@@ -22,12 +40,12 @@ body {
 
 #game-container {
     position: relative;
-    width: 400px;
-    margin: 0 auto;
 }
 
 #game-canvas {
     background-color: #ffffff;
+    display: block;
+    margin: 0 auto;
 }
 
 #score-display {
