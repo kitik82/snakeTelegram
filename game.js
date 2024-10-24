@@ -6,6 +6,7 @@ const scoreList = document.getElementById('score-list');
 const snakeColorInput = document.getElementById('snake-color');
 const headColorInput = document.getElementById('head-color');
 const scoreDisplay = document.getElementById('score-display');
+
 let snake = [];
 let direction = 'RIGHT';
 let food = {};
@@ -15,12 +16,14 @@ let gameInterval;
 let previousScores = [];
 let snakeColor = '#00AA00';
 let headColor = '#000000';
-let gridSize = 20;
-let canvasSize = 400; // Размер канваса по умолчанию
+
+const gridSize = 10; // Уменьшаем размер сетки
+const canvasSize = 300; // Фиксированный размер канваса
 
 function initGame() {
-    // Устанавливаем размер канваса в зависимости от доступной ширины
-    adjustCanvasSize();
+    // Устанавливаем фиксированный размер канваса
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
 
     // Инициализируем позицию змейки в центре канваса
     const initialX = Math.floor((canvas.width / gridSize) / 2) * gridSize;
@@ -33,20 +36,6 @@ function initGame() {
     scoreDisplay.textContent = 'Счет: 0';
     snakeColor = snakeColorInput.value;
     headColor = headColorInput.value;
-}
-
-function adjustCanvasSize() {
-    // Определяем размер канваса в зависимости от размера окна или мини-приложения
-    let minDimension = Math.min(window.innerWidth, window.innerHeight) * 0.8;
-    canvasSize = Math.floor(minDimension / gridSize) * gridSize; // Убедимся, что размер кратен gridSize
-
-    // Устанавливаем минимальный размер канваса
-    if (canvasSize < 200) {
-        canvasSize = 200;
-    }
-
-    canvas.width = canvasSize;
-    canvas.height = canvasSize;
 }
 
 function createFood() {
@@ -160,11 +149,4 @@ speedButtons.forEach(button => {
         initGame();
         gameInterval = setInterval(draw, speed);
     });
-});
-
-// Обновляем размер канваса при изменении размера окна
-window.addEventListener('resize', () => {
-    if (canvas.style.display !== 'none') {
-        adjustCanvasSize();
-    }
 });
