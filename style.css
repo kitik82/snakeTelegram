@@ -1,3 +1,5 @@
+/* Существующий CSS */
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -47,6 +49,13 @@ body {
     list-style: none;
     padding: 0;
     font-size: 14px;
+}
+
+#leaderboard {
+    list-style: none;
+    padding: 0;
+    font-size: 14px;
+    margin-top: 10px;
 }
 
 #game-container {
