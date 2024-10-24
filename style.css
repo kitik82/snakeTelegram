@@ -1,4 +1,4 @@
-/* Существующий CSS */
+/* Устанавливаем фиксированные размеры и убираем адаптивность */
 
 body {
     margin: 0;
@@ -11,32 +11,29 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
-}
-
-#main-menu, #game-container {
-    margin: auto;
+    height: 100vh;
 }
 
 #main-menu {
     text-align: center;
+    margin-bottom: 20px;
 }
 
 #main-menu h1 {
-    font-size: 48px;
+    font-size: 36px;
     margin-bottom: 10px;
 }
 
 .speed-btn {
     padding: 10px 20px;
     margin: 5px;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 #game-container {
     position: relative;
     display: inline-block;
-    border: 10px solid;
+    border: 5px solid;
     border-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet) 1;
 }
 
@@ -50,6 +47,6 @@ body {
     top: 0;
     left: 0;
     padding: 5px 10px;
-    font-size: 20px;
+    font-size: 18px;
     background-color: rgba(255, 255, 255, 0.7);
 }
