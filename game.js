@@ -17,7 +17,7 @@ let previousScores = [];
 let snakeColor = '#00AA00';
 let headColor = '#000000';
 
-const gridSize = 10; // Уменьшаем размер сетки
+const gridSize = 10; // Уменьшенный размер сетки
 const canvasSize = 300; // Фиксированный размер канваса
 
 function initGame() {
@@ -74,8 +74,8 @@ function draw() {
     if (
         snakeX < 0 ||
         snakeY < 0 ||
-        snakeX + gridSize > canvas.width ||
-        snakeY + gridSize > canvas.height ||
+        snakeX >= canvas.width ||
+        snakeY >= canvas.height ||
         collision(snakeX, snakeY, snake)
     ) {
         gameOver();
@@ -111,6 +111,7 @@ function gameOver() {
     updateScoreList();
     mainMenu.style.display = 'block';
     document.getElementById('game-container').style.display = 'none';
+    scoreDisplay.style.display = 'none'; // Скрываем счет после окончания игры
 }
 
 function updateScoreList() {
@@ -146,6 +147,7 @@ speedButtons.forEach(button => {
 
         mainMenu.style.display = 'none';
         document.getElementById('game-container').style.display = 'block';
+        scoreDisplay.style.display = 'block'; // Показываем счет при начале игры
         initGame();
         gameInterval = setInterval(draw, speed);
     });
