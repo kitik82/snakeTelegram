@@ -3,7 +3,6 @@ const ctx = canvas.getContext('2d');
 const mainMenu = document.getElementById('main-menu');
 const speedButtons = document.querySelectorAll('.speed-btn');
 const scoreList = document.getElementById('score-list');
-const leaderboardElement = document.getElementById('leaderboard');
 const snakeColorInput = document.getElementById('snake-color');
 const headColorInput = document.getElementById('head-color');
 const scoreDisplay = document.getElementById('score-display');
@@ -15,18 +14,11 @@ let score = 0;
 let speed = 100;
 let gameInterval;
 let previousScores = [];
-let leaderboard = [];
 let snakeColor = '#00AA00';
 let headColor = '#000000';
 
 const gridSize = 10; // Размер сетки
 const canvasSize = 300; // Размер канваса
-
-// Загрузка таблицы рекордов из локального хранилища
-if (localStorage.getItem('snakeLeaderboard')) {
-    leaderboard = JSON.parse(localStorage.getItem('snakeLeaderboard'));
-    updateLeaderboard();
-}
 
 function initGame() {
     // Устанавливаем фиксированный размер канваса
@@ -95,8 +87,8 @@ function draw() {
     if (
         snakeX < 0 ||
         snakeY < 0 ||
-        snakeX >= canvas.width ||
-        snakeY >= canvas.height ||
+        snakeX + gridSize > canvas.width ||
+        snakeY + gridSize > canvas.height ||
         collision(snakeX, snakeY, snake)
     ) {
         gameOver();
@@ -130,39 +122,9 @@ function gameOver() {
     clearInterval(gameInterval);
     previousScores.push(score);
     updateScoreList();
-
-    // Проверяем, входит ли текущий счет в топ-10
-    let isHighScore = false;
-
-    if (leaderboard.length < 10 || score > leaderboard[leaderboard.length - 1].score) {
-        isHighScore = true;
-    }
-
-    if (isHighScore) {
-        let playerName = prompt('Вы установили новый рекорд! Пожалуйста, введите ваше имя:');
-        if (!playerName) {
-            playerName = 'Игрок';
-        }
-        // Добавляем новый результат в таблицу рекордов
-        leaderboard.push({ name: playerName, score: score });
-
-        // Сортируем таблицу по убыванию счетов
-        leaderboard.sort((a, b) => b.score - a.score);
-
-        // Обрезаем таблицу до 10 записей
-        leaderboard = leaderboard.slice(0, 10);
-
-        // Сохраняем таблицу рекордов в локальное хранилище
-        localStorage.setItem('snakeLeaderboard', JSON.stringify(leaderboard));
-    }
-
-    // Обновляем отображение таблицы рекордов
-    updateLeaderboard();
-
-    // Сбрасываем игру
     mainMenu.style.display = 'block';
     document.getElementById('game-container').style.display = 'none';
-    scoreDisplay.style.display = 'none';
+    scoreDisplay.style.display = 'none'; // Скрываем счет после окончания игры
 }
 
 function updateScoreList() {
@@ -171,15 +133,6 @@ function updateScoreList() {
         let li = document.createElement('li');
         li.textContent = `Игра ${index + 1}: ${s} очков`;
         scoreList.appendChild(li);
-    });
-}
-
-function updateLeaderboard() {
-    leaderboardElement.innerHTML = '';
-    leaderboard.forEach((entry, index) => {
-        let li = document.createElement('li');
-        li.textContent = `${index + 1}. ${entry.name} - ${entry.score} очков`;
-        leaderboardElement.appendChild(li);
     });
 }
 
