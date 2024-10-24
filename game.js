@@ -17,8 +17,8 @@ let previousScores = [];
 let snakeColor = '#00AA00';
 let headColor = '#000000';
 
-const gridSize = 10; // Уменьшенный размер сетки
-const canvasSize = 300; // Фиксированный размер канваса
+const gridSize = 10; // Размер сетки
+const canvasSize = 300; // Размер канваса
 
 function initGame() {
     // Устанавливаем фиксированный размер канваса
@@ -39,11 +39,24 @@ function initGame() {
 }
 
 function createFood() {
-    const maxCellsX = canvas.width / gridSize;
-    const maxCellsY = canvas.height / gridSize;
+    const maxCellsX = (canvas.width / gridSize) - 2; // Исключаем крайние клетки
+    const maxCellsY = (canvas.height / gridSize) - 2;
+    let validPosition = false;
+    let foodX, foodY;
+
+    while (!validPosition) {
+        foodX = (Math.floor(Math.random() * maxCellsX) + 1) * gridSize; // +1, чтобы не появлялась на нулевой клетке
+        foodY = (Math.floor(Math.random() * maxCellsY) + 1) * gridSize;
+
+        // Проверяем, не совпадает ли позиция еды с телом змейки
+        if (!collision(foodX, foodY, snake)) {
+            validPosition = true;
+        }
+    }
+
     food = {
-        x: Math.floor(Math.random() * maxCellsX) * gridSize,
-        y: Math.floor(Math.random() * maxCellsY) * gridSize,
+        x: foodX,
+        y: foodY,
     };
 }
 
