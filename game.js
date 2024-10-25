@@ -17,7 +17,7 @@ let previousScores = [];
 let snakeColor = '#00AA00';
 let headColor = '#000000';
 
-const gridSize = 10; // Размер сетки
+const gridSize = 10; // Размер клетки
 const canvasSize = 300; // Размер канваса
 
 function initGame() {
@@ -26,8 +26,8 @@ function initGame() {
     canvas.height = canvasSize;
 
     // Инициализируем позицию змейки в центре канваса
-    const initialX = Math.floor((canvas.width / gridSize) / 2) * gridSize;
-    const initialY = Math.floor((canvas.height / gridSize) / 2) * gridSize;
+    const initialX = Math.floor(canvas.width / (2 * gridSize)) * gridSize;
+    const initialY = Math.floor(canvas.height / (2 * gridSize)) * gridSize;
     snake = [{ x: initialX, y: initialY }];
 
     direction = 'RIGHT';
@@ -39,14 +39,14 @@ function initGame() {
 }
 
 function createFood() {
-    const maxCellsX = (canvas.width / gridSize) - 2; // Исключаем крайние клетки
-    const maxCellsY = (canvas.height / gridSize) - 2;
+    const maxCellsX = canvas.width / gridSize;
+    const maxCellsY = canvas.height / gridSize;
     let validPosition = false;
     let foodX, foodY;
 
     while (!validPosition) {
-        foodX = (Math.floor(Math.random() * maxCellsX) + 1) * gridSize; // +1, чтобы не появлялась на нулевой клетке
-        foodY = (Math.floor(Math.random() * maxCellsY) + 1) * gridSize;
+        foodX = Math.floor(Math.random() * maxCellsX) * gridSize;
+        foodY = Math.floor(Math.random() * maxCellsY) * gridSize;
 
         // Проверяем, не совпадает ли позиция еды с телом змейки
         if (!collision(foodX, foodY, snake)) {
@@ -87,8 +87,8 @@ function draw() {
     if (
         snakeX < 0 ||
         snakeY < 0 ||
-        snakeX + gridSize > canvas.width ||
-        snakeY + gridSize > canvas.height ||
+        snakeX >= canvas.width ||
+        snakeY >= canvas.height ||
         collision(snakeX, snakeY, snake)
     ) {
         gameOver();
@@ -110,7 +110,7 @@ function draw() {
 }
 
 function collision(x, y, array) {
-    for (let i = 0; i < array.length; i++) {
+    for (let i = 1; i < array.length; i++) {
         if (x === array[i].x && y === array[i].y) {
             return true;
         }
